@@ -28,14 +28,18 @@ let LADO = 37
 let MURO = 0
 let PASILLO = 1
 let lab : number[][] = []
-function init_lab(lab: number[][]) {
+let visitado : boolean[][] = []
+function init_lab(lab: number[][], visitado: boolean[][]) {
     for (let i = 0; i < LADO; i++) {
         lab.push([])
+        visitado.push([])
         for (let j = 0; j < LADO; j++) {
             if (i % 2 == 0 || j % 2 == 0) {
                 lab[i].push(MURO)
+                visitado[i].push(true)
             } else {
                 lab[i].push(PASILLO)
+                visitado[i].push(false)
             }
             
         }
@@ -48,11 +52,79 @@ function pinta_mosaicos(lab: number[][]) {
             if (lab[i][j] == MURO) {
                 tiles.setTileAt(tiles.getTileLocation(i, j), sprites.builtin.brick)
                 tiles.setWallAt(tiles.getTileLocation(i, j), true)
+            } else if (lab[i][j] == PASILLO) {
+                tiles.setTileAt(tiles.getTileLocation(i, j), sprites.dungeon.darkGroundCenter)
             }
             
         }
     }
 }
 
-init_lab(lab)
+function vecinos(c: any) {
+    let v = []
+    let x = c[0]
+    let y = c[1]
+    if (x - 2 > 0) {
+        v.push([x - 2, y])
+    }
+    
+    if (y + 2 < LADO) {
+        v.push([x, y + 2])
+    }
+    
+    if (x + 2 < LADO) {
+        v.push([x + 2, y])
+    }
+    
+    if (y - 2 > 0) {
+        v.push([x, y - 2])
+    }
+    
+    return v
+}
+
+function celda_enmedio(c1: any, c2: any): number[] {
+    let y: number;
+    let x: number;
+    let x1 = c1[0]
+    let y1 = c1[1]
+    let x2 = c2[0]
+    let y2 = c2[1]
+    if (y1 == y2) {
+        y = y1
+        if (x2 < x1) {
+            x = x1 - 1
+        } else {
+            x = x1 + 1
+        }
+        
+    } else {
+        x = x1
+        if (y2 < y1) {
+            y = y1 - 1
+        } else {
+            y = y1 + 1
+        }
+        
+    }
+    
+    return [x, y]
+}
+
+function crea_laberinto(lab: number[][], visitado: boolean[][]) {
+    let muro: number[];
+    let xmuro: number;
+    let ymuro: number;
+    let celda = [3, 3]
+    let vecinitos = vecinos(celda)
+    for (let v of vecinitos) {
+        muro = celda_enmedio(celda, v)
+        xmuro = muro[0]
+        ymuro = muro[1]
+        lab[xmuro][ymuro] = PASILLO
+    }
+}
+
+init_lab(lab, visitado)
+crea_laberinto(lab, visitado)
 pinta_mosaicos(lab)
