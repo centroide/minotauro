@@ -17,7 +17,7 @@ let mySprite = sprites.create(img`
     . . . f f f f f f f f f f . . .
     . . . . f f . . . f f f . . . .
 `, SpriteKind.Player)
-mySprite.setPosition(24, 24)
+mySprite.setPosition(56, 56)
 controller.moveSprite(mySprite)
 mySprite.setBounceOnWall(true)
 tiles.setTilemap(tilemap`
@@ -60,7 +60,7 @@ function pinta_mosaicos(lab: number[][]) {
     }
 }
 
-function vecinos(c: any) {
+function vecinos(c: number[]) {
     let v = []
     let x = c[0]
     let y = c[1]
@@ -83,7 +83,7 @@ function vecinos(c: any) {
     return v
 }
 
-function celda_enmedio(c1: any, c2: any): number[] {
+function celda_enmedio(c1: number[], c2: number[]): number[] {
     let y: number;
     let x: number;
     let x1 = c1[0]
@@ -116,7 +116,8 @@ function crea_laberinto(lab: number[][], visitado: boolean[][]) {
     let xmuro: number;
     let ymuro: number;
     let celda = [3, 3]
-    let vecinitos = vecinos(celda)
+    let vecinitos = []
+    vecinitos = vecinos(celda)
     for (let v of vecinitos) {
         muro = celda_enmedio(celda, v)
         xmuro = muro[0]

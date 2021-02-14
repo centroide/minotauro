@@ -19,7 +19,7 @@ mySprite = sprites.create(img("""
     . . . . f f . . . f f f . . . .
 """),
     SpriteKind.player)
-mySprite.set_position(24, 24)
+mySprite.set_position(56, 56)
 controller.move_sprite(mySprite)
 mySprite.set_bounce_on_wall(True)
 tiles.set_tilemap(tilemap("""
@@ -54,21 +54,21 @@ def pinta_mosaicos(lab:List[List[number]]):
             elif lab[i][j]==PASILLO:
                 tiles.set_tile_at(tiles.get_tile_location(i, j), sprites.dungeon.dark_ground_center)
 
-def vecinos(c):
+def vecinos(c:List[number]):
     v=[]
     x=c[0]
     y=c[1]
     if x-2>0:
-        v.append((x-2,y))
+        v.append([x-2,y])
     if y+2<LADO:
-        v.append((x,y+2))
+        v.append([x,y+2])
     if x+2<LADO:
-        v.append((x+2,y))
+        v.append([x+2,y])
     if y-2>0:
-        v.append((x,y-2))
+        v.append([x,y-2])
     return v
 
-def celda_enmedio(c1,c2):
+def celda_enmedio(c1:List[number],c2:List[number]):
     x1= c1[0]
     y1= c1[1]
     x2= c2[0]
@@ -85,10 +85,11 @@ def celda_enmedio(c1,c2):
             y=y1-1
         else:
             y=y1+1
-    return (x,y)
+    return [x,y]
 
 def crea_laberinto(lab:List[List[number]], visitado:List[List[bool]]):
     celda=(3,3)
+    vecinitos=[]
     vecinitos=vecinos(celda)
     for v in vecinitos:
         muro=celda_enmedio(celda,v)
