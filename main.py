@@ -21,12 +21,12 @@ mySprite = sprites.create(img("""
 mySprite.set_position(56, 56)
 controller.move_sprite(mySprite)
 mySprite.set_bounce_on_wall(True)
-tiles.set_tilemap(tilemap("""
-    level2
-"""))
+# mapa del tamaño máximo: 255x255
+tiles.set_tilemap(tilemap("""level2"""))
 scene.camera_follow_sprite(mySprite)
 
-LADO=5
+# LADO máximo de 255
+LADO=150
 MURO=0
 PASILLO=1
 lab: List[List[number]] = []

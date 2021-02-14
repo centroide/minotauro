@@ -20,11 +20,11 @@ let mySprite = sprites.create(img`
 mySprite.setPosition(56, 56)
 controller.moveSprite(mySprite)
 mySprite.setBounceOnWall(true)
-tiles.setTilemap(tilemap`
-    level2
-`)
+//  mapa del tamaño máximo: 255x255
+tiles.setTilemap(tilemap`level2`)
 scene.cameraFollowSprite(mySprite)
-let LADO = 5
+//  LADO máximo de 255
+let LADO = 150
 let MURO = 0
 let PASILLO = 1
 let lab : number[][] = []
