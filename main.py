@@ -1,4 +1,3 @@
-
 scene.set_background_color(3)
 mySprite = sprites.create(img("""
     . . . . . . . . . . . . . . . .
@@ -27,7 +26,7 @@ tiles.set_tilemap(tilemap("""
 """))
 scene.camera_follow_sprite(mySprite)
 
-LADO=37
+LADO=5
 MURO=0
 PASILLO=1
 lab: List[List[number]] = []
@@ -67,6 +66,17 @@ def vecinos(c:List[number]):
     if y-2>0:
         v.append([x,y-2])
     return v
+    
+def vecinos_no_visitados(c:List[number]):
+    todos: List[List[number]]= []
+    todos=vecinos(c)
+    no_visitados: List[List[number]]= []
+    no_visitados=[]
+    for h in todos:
+        if not visitado[h[0]][h[1]]:
+            no_visitados.append(h)
+    return no_visitados
+        
 
 def celda_enmedio(c1:List[number],c2:List[number]):
     x1= c1[0]
@@ -87,16 +97,40 @@ def celda_enmedio(c1:List[number],c2:List[number]):
             y=y1+1
     return [x,y]
 
+def aleatorio_impar(abajo,arriba):
+    nai=randint(abajo,arriba)
+    if nai%2==1:
+        return nai
+    elif nai==arriba:
+        return nai-1
+    else:
+        return nai+1 
+
 def crea_laberinto(lab:List[List[number]], visitado:List[List[bool]]):
-    celda=(3,3)
-    vecinitos=[]
+    pila: List[List[number]]= []
+    pila.append([aleatorio_impar(0,LADO-1),aleatorio_impar(0,LADO-1)])
+    while len(pila)!=0:
+        actual=pila[len(pila)-1]
+        visitado[actual[0]][actual[1]]= True
+        vecinitos=vecinos_no_visitados(actual)
+        if len(vecinitos)==0:
+            pila.pop()
+        else:
+            n=randint(0, len(vecinitos)-1)
+            sig=vecinitos[n]
+            muro=celda_enmedio(actual,sig)
+            lab[muro[0]][muro[1]]= PASILLO
+            pila.append(sig)
+
+def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
+    celda=[3,3]
+    vecinitos: List[List[number]]= []
     vecinitos=vecinos(celda)
     for v in vecinitos:
         muro=celda_enmedio(celda,v)
         xmuro= muro[0]
         ymuro= muro[1]
         lab[xmuro][ymuro]=PASILLO
-
 
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)

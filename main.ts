@@ -24,7 +24,7 @@ tiles.setTilemap(tilemap`
     level2
 `)
 scene.cameraFollowSprite(mySprite)
-let LADO = 37
+let LADO = 5
 let MURO = 0
 let PASILLO = 1
 let lab : number[][] = []
@@ -60,7 +60,7 @@ function pinta_mosaicos(lab: number[][]) {
     }
 }
 
-function vecinos(c: number[]) {
+function vecinos(c: number[]): number[][] {
     let v = []
     let x = c[0]
     let y = c[1]
@@ -81,6 +81,20 @@ function vecinos(c: number[]) {
     }
     
     return v
+}
+
+function vecinos_no_visitados(c: number[]): number[][] {
+    let todos : number[][] = []
+    todos = vecinos(c)
+    let no_visitados : number[][] = []
+    no_visitados = []
+    for (let h of todos) {
+        if (!visitado[h[0]][h[1]]) {
+            no_visitados.push(h)
+        }
+        
+    }
+    return no_visitados
 }
 
 function celda_enmedio(c1: number[], c2: number[]): number[] {
@@ -111,12 +125,49 @@ function celda_enmedio(c1: number[], c2: number[]): number[] {
     return [x, y]
 }
 
+function aleatorio_impar(abajo: number, arriba: number): number {
+    let nai = randint(abajo, arriba)
+    if (nai % 2 == 1) {
+        return nai
+    } else if (nai == arriba) {
+        return nai - 1
+    } else {
+        return nai + 1
+    }
+    
+}
+
 function crea_laberinto(lab: number[][], visitado: boolean[][]) {
+    let actual: number[];
+    let vecinitos: number[][];
+    let n: number;
+    let sig: number[];
+    let muro: number[];
+    let pila : number[][] = []
+    pila.push([aleatorio_impar(0, LADO - 1), aleatorio_impar(0, LADO - 1)])
+    while (pila.length != 0) {
+        actual = pila[pila.length - 1]
+        visitado[actual[0]][actual[1]] = true
+        vecinitos = vecinos_no_visitados(actual)
+        if (vecinitos.length == 0) {
+            pila.pop()
+        } else {
+            n = randint(0, vecinitos.length - 1)
+            sig = vecinitos[n]
+            muro = celda_enmedio(actual, sig)
+            lab[muro[0]][muro[1]] = PASILLO
+            pila.push(sig)
+        }
+        
+    }
+}
+
+function crea_cruz(lab: number[][], visitado: boolean[][]) {
     let muro: number[];
     let xmuro: number;
     let ymuro: number;
     let celda = [3, 3]
-    let vecinitos = []
+    let vecinitos : number[][] = []
     vecinitos = vecinos(celda)
     for (let v of vecinitos) {
         muro = celda_enmedio(celda, v)
