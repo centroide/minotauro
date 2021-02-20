@@ -1,34 +1,4 @@
-scene.setBackgroundColor(3)
-let mySprite = sprites.create(img`
-    . . . . . . . . . . . . . . . .
-    . . . . . f f f f f f . . . . .
-    . . . f f e e e e f 2 f . . . .
-    . . f f e e e e f 2 2 2 f . . .
-    . . f e e e f f e e e e f . . .
-    . . f f f f e e 2 2 2 2 e f . .
-    . . f e 2 2 2 f f f f e 2 f . .
-    . f f f f f f f e e e f f f . .
-    . f f e 4 4 e b f 4 4 e e f . .
-    . f e e 4 d 4 1 f d d e f . . .
-    . . f e e e e e d d d f . . . .
-    . . . . f 4 d d e 4 e f . . . .
-    . . . . f e d d e 2 2 f . . . .
-    . . . f f f e e f 5 5 f f . . .
-    . . . f f f f f f f f f f . . .
-    . . . . f f . . . f f f . . . .
-`, SpriteKind.Player)
-mySprite.setPosition(56, 56)
-controller.moveSprite(mySprite)
-mySprite.setBounceOnWall(true)
-//  mapa del tamaño máximo: 255x255
-tiles.setTilemap(tilemap`level2`)
-scene.cameraFollowSprite(mySprite)
-//  LADO máximo de 255
-let LADO = 150
-let MURO = 0
-let PASILLO = 1
-let lab : number[][] = []
-let visitado : boolean[][] = []
+let fantasma: Sprite;
 function init_lab(lab: number[][], visitado: boolean[][]) {
     for (let i = 0; i < LADO; i++) {
         lab.push([])
@@ -177,6 +147,78 @@ function crea_cruz(lab: number[][], visitado: boolean[][]) {
     }
 }
 
+game.onUpdateInterval(333, function on_update_interval() {
+    for (let f of fantasmas) {
+        if (teseo.overlapsWith(f)) {
+            game.over()
+        }
+        
+    }
+})
+//  LADO impar máximo de 255
+let LADO = 7
+let MURO = 0
+let PASILLO = 1
+let NUM_FANTASMAS = 500
+let lab : number[][] = []
+let visitado : boolean[][] = []
+scene.setBackgroundColor(3)
+let teseo = sprites.create(img`
+    . . . . . . . . . . . . . . . .
+    . . . . . f f f f f f . . . . .
+    . . . f f e e e e f 2 f . . . .
+    . . f f e e e e f 2 2 2 f . . .
+    . . f e e e f f e e e e f . . .
+    . . f f f f e e 2 2 2 2 e f . .
+    . . f e 2 2 2 f f f f e 2 f . .
+    . f f f f f f f e e e f f f . .
+    . f f e 4 4 e b f 4 4 e e f . .
+    . f e e 4 d 4 1 f d d e f f . .
+    . . f e e e 4 d d d d f d d f .
+    . . . . f e e 4 e e e f b b f .
+    . . . . f 2 2 2 4 d d e b b f .
+    . . . f f 4 4 4 e d d e b f . .
+    . . . f f f f f f e e f f . . .
+    . . . . f f . . . f f f . . . .
+`, SpriteKind.Player)
+let fantasmas : Object[] = []
+for (let i = 0; i < NUM_FANTASMAS; i++) {
+    fantasma = sprites.create(img`
+        ........................
+        ........................
+        ........................
+        ........................
+        ..........ffff..........
+        ........ff1111ff........
+        .......fb111111bf.......
+        .......f11111111f.......
+        ......fd11111111df......
+        ......fd11111111df......
+        ......fddd1111dddf......
+        ......fbdbfddfbdbf......
+        ......fcdcf11fcdcf......
+        .......fb111111bf.......
+        ......fffcdb1bdffff.....
+        ....fc111cbfbfc111cf....
+        ....f1b1b1ffff1b1b1f....
+        ....fbfbffffffbfbfbf....
+        .........ffffff.........
+        ...........fff..........
+        ........................
+        ........................
+        ........................
+        ........................
+    `, SpriteKind.Enemy)
+    fantasma.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
+    fantasma.follow(teseo, 40)
+    fantasmas.push(fantasma)
+}
+teseo.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
+controller.moveSprite(teseo)
+teseo.setBounceOnWall(true)
+//  mapa del tamaño máximo: 255x255
+tiles.setTilemap(tilemap`level2`)
+scene.cameraFollowSprite(teseo)
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
 pinta_mosaicos(lab)

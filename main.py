@@ -1,36 +1,4 @@
-scene.set_background_color(3)
-mySprite = sprites.create(img("""
-    . . . . . . . . . . . . . . . .
-    . . . . . f f f f f f . . . . .
-    . . . f f e e e e f 2 f . . . .
-    . . f f e e e e f 2 2 2 f . . .
-    . . f e e e f f e e e e f . . .
-    . . f f f f e e 2 2 2 2 e f . .
-    . . f e 2 2 2 f f f f e 2 f . .
-    . f f f f f f f e e e f f f . .
-    . f f e 4 4 e b f 4 4 e e f . .
-    . f e e 4 d 4 1 f d d e f . . .
-    . . f e e e e e d d d f . . . .
-    . . . . f 4 d d e 4 e f . . . .
-    . . . . f e d d e 2 2 f . . . .
-    . . . f f f e e f 5 5 f f . . .
-    . . . f f f f f f f f f f . . .
-    . . . . f f . . . f f f . . . .
-"""),
-    SpriteKind.player)
-mySprite.set_position(56, 56)
-controller.move_sprite(mySprite)
-mySprite.set_bounce_on_wall(True)
-# mapa del tamaño máximo: 255x255
-tiles.set_tilemap(tilemap("""level2"""))
-scene.camera_follow_sprite(mySprite)
 
-# LADO máximo de 255
-LADO=150
-MURO=0
-PASILLO=1
-lab: List[List[number]] = []
-visitado: List[List[bool]] = []
 
 def init_lab (lab:List[List[number]], visitado:List[List[bool]]):
     for i in range(LADO):
@@ -131,6 +99,79 @@ def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
         xmuro= muro[0]
         ymuro= muro[1]
         lab[xmuro][ymuro]=PASILLO
+
+def on_update_interval():
+    for f in fantasmas:
+        if teseo.overlaps_with(f):
+            game.over()
+
+game.on_update_interval(333, on_update_interval)
+
+# LADO impar máximo de 255
+LADO=7
+MURO=0
+PASILLO=1
+NUM_FANTASMAS=500
+
+lab: List[List[number]] = []
+visitado: List[List[bool]] = []
+
+scene.set_background_color(3)
+teseo = sprites.create(img("""
+    . . . . . . . . . . . . . . . .
+    . . . . . f f f f f f . . . . .
+    . . . f f e e e e f 2 f . . . .
+    . . f f e e e e f 2 2 2 f . . .
+    . . f e e e f f e e e e f . . .
+    . . f f f f e e 2 2 2 2 e f . .
+    . . f e 2 2 2 f f f f e 2 f . .
+    . f f f f f f f e e e f f f . .
+    . f f e 4 4 e b f 4 4 e e f . .
+    . f e e 4 d 4 1 f d d e f f . .
+    . . f e e e 4 d d d d f d d f .
+    . . . . f e e 4 e e e f b b f .
+    . . . . f 2 2 2 4 d d e b b f .
+    . . . f f 4 4 4 e d d e b f . .
+    . . . f f f f f f e e f f . . .
+    . . . . f f . . . f f f . . . .
+"""), SpriteKind.player)
+fantasmas : List[Object] =[]
+for i in range (NUM_FANTASMAS):
+    fantasma = sprites.create(img("""
+        ........................
+        ........................
+        ........................
+        ........................
+        ..........ffff..........
+        ........ff1111ff........
+        .......fb111111bf.......
+        .......f11111111f.......
+        ......fd11111111df......
+        ......fd11111111df......
+        ......fddd1111dddf......
+        ......fbdbfddfbdbf......
+        ......fcdcf11fcdcf......
+        .......fb111111bf.......
+        ......fffcdb1bdffff.....
+        ....fc111cbfbfc111cf....
+        ....f1b1b1ffff1b1b1f....
+        ....fbfbffffffbfbfbf....
+        .........ffffff.........
+        ...........fff..........
+        ........................
+        ........................
+        ........................
+        ........................
+    """), SpriteKind.enemy)
+    fantasma.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8 )    
+    fantasma.follow(teseo,40)
+    fantasmas.append(fantasma)
+teseo.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8)
+controller.move_sprite(teseo)
+teseo.set_bounce_on_wall(True)
+# mapa del tamaño máximo: 255x255
+tiles.set_tilemap(tilemap("""level2"""))
+scene.camera_follow_sprite(teseo)
 
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
