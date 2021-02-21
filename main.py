@@ -100,21 +100,24 @@ def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
         ymuro= muro[1]
         lab[xmuro][ymuro]=PASILLO
 
-def on_update_interval():
-    for f in fantasmas:
-        if teseo.overlaps_with(f):
-            game.over()
+def choca_chup(s1,s2):
+    game.over()
 
-game.on_update_interval(333, on_update_interval)
+@namespace
+class SpriteKind:
+    fantasma=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=7
+LADO=255
 MURO=0
 PASILLO=1
-NUM_FANTASMAS=500
+NUM_FANTASMAS=100
 
 lab: List[List[number]] = []
 visitado: List[List[bool]] = []
+
+    
+sprites.on_overlap(SpriteKind.player, SpriteKind.fantasma, choca_chup)
 
 scene.set_background_color(3)
 teseo = sprites.create(img("""
@@ -135,7 +138,6 @@ teseo = sprites.create(img("""
     . . . f f f f f f e e f f . . .
     . . . . f f . . . f f f . . . .
 """), SpriteKind.player)
-fantasmas : List[Object] =[]
 for i in range (NUM_FANTASMAS):
     fantasma = sprites.create(img("""
         ........................
@@ -162,10 +164,9 @@ for i in range (NUM_FANTASMAS):
         ........................
         ........................
         ........................
-    """), SpriteKind.enemy)
+    """), SpriteKind.fantasma)
     fantasma.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8 )    
     fantasma.follow(teseo,40)
-    fantasmas.append(fantasma)
 teseo.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8)
 controller.move_sprite(teseo)
 teseo.set_bounce_on_wall(True)

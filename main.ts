@@ -147,21 +147,20 @@ function crea_cruz(lab: number[][], visitado: boolean[][]) {
     }
 }
 
-game.onUpdateInterval(333, function on_update_interval() {
-    for (let f of fantasmas) {
-        if (teseo.overlapsWith(f)) {
-            game.over()
-        }
-        
-    }
-})
+namespace SpriteKind {
+    export const fantasma = SpriteKind.create()
+}
+
 //  LADO impar máximo de 255
-let LADO = 7
+let LADO = 255
 let MURO = 0
 let PASILLO = 1
-let NUM_FANTASMAS = 500
+let NUM_FANTASMAS = 100
 let lab : number[][] = []
 let visitado : boolean[][] = []
+sprites.onOverlap(SpriteKind.Player, SpriteKind.fantasma, function choca_chup(s1: Sprite, s2: Sprite) {
+    game.over()
+})
 scene.setBackgroundColor(3)
 let teseo = sprites.create(img`
     . . . . . . . . . . . . . . . .
@@ -181,7 +180,6 @@ let teseo = sprites.create(img`
     . . . f f f f f f e e f f . . .
     . . . . f f . . . f f f . . . .
 `, SpriteKind.Player)
-let fantasmas : Object[] = []
 for (let i = 0; i < NUM_FANTASMAS; i++) {
     fantasma = sprites.create(img`
         ........................
@@ -208,10 +206,9 @@ for (let i = 0; i < NUM_FANTASMAS; i++) {
         ........................
         ........................
         ........................
-    `, SpriteKind.Enemy)
+    `, SpriteKind.fantasma)
     fantasma.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
     fantasma.follow(teseo, 40)
-    fantasmas.push(fantasma)
 }
 teseo.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
 controller.moveSprite(teseo)
