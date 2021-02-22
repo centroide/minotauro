@@ -20,6 +20,11 @@ def pinta_mosaicos(lab:List[List[number]]):
                 tiles.set_wall_at(tiles.get_tile_location(i, j), True)
             elif lab[i][j]==PASILLO:
                 tiles.set_tile_at(tiles.get_tile_location(i, j), sprites.dungeon.dark_ground_center)
+            elif lab[i][j]==PUERTA:
+                tiles.set_tile_at(tiles.get_tile_location(i, j), assets.tile("""
+                    puerta
+                """))
+
 
 def vecinos(c:List[number]):
     v=[]
@@ -90,6 +95,21 @@ def crea_laberinto(lab:List[List[number]], visitado:List[List[bool]]):
             lab[muro[0]][muro[1]]= PASILLO
             pila.append(sig)
 
+def crea_puerta(lab:List[List[number]]):
+    if borde==0:  # arriba
+        y=0
+        x=aleatorio_impar(0, LADO-1)
+    elif borde==1:  # abajo
+        y=LADO-1
+        x=aleatorio_impar(0, LADO-1)
+    elif borde==2: # izquierda
+        y=aleatorio_impar(0, LADO-1)
+        x=0
+    else: # derecha
+        y=aleatorio_impar(0, LADO-1)
+        x=LADO-1
+    lab[x][y]=PUERTA
+
 def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
     celda=[3,3]
     vecinitos: List[List[number]]= []
@@ -108,10 +128,16 @@ class SpriteKind:
     fantasma=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=255
+LADO=11
 MURO=0
 PASILLO=1
-NUM_FANTASMAS=100
+PUERTA=2
+NUM_FANTASMAS=2
+borde=randint(0,3)
+
+
+
+
 
 lab: List[List[number]] = []
 visitado: List[List[bool]] = []
@@ -172,8 +198,15 @@ controller.move_sprite(teseo)
 teseo.set_bounce_on_wall(True)
 # mapa del tamaño máximo: 255x255
 tiles.set_tilemap(tilemap("""level2"""))
+
+
+
+
+
+
 scene.camera_follow_sprite(teseo)
 
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
+crea_puerta(lab)
 pinta_mosaicos(lab)

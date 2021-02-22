@@ -24,6 +24,10 @@ function pinta_mosaicos(lab: number[][]) {
                 tiles.setWallAt(tiles.getTileLocation(i, j), true)
             } else if (lab[i][j] == PASILLO) {
                 tiles.setTileAt(tiles.getTileLocation(i, j), sprites.dungeon.darkGroundCenter)
+            } else if (lab[i][j] == PUERTA) {
+                tiles.setTileAt(tiles.getTileLocation(i, j), assets.tile`
+                    puerta
+                `)
             }
             
         }
@@ -132,6 +136,30 @@ function crea_laberinto(lab: number[][], visitado: boolean[][]) {
     }
 }
 
+function crea_puerta(lab: number[][]) {
+    let y: number;
+    let x: number;
+    if (borde == 0) {
+        //  arriba
+        y = 0
+        x = aleatorio_impar(0, LADO - 1)
+    } else if (borde == 1) {
+        //  abajo
+        y = LADO - 1
+        x = aleatorio_impar(0, LADO - 1)
+    } else if (borde == 2) {
+        //  izquierda
+        y = aleatorio_impar(0, LADO - 1)
+        x = 0
+    } else {
+        //  derecha
+        y = aleatorio_impar(0, LADO - 1)
+        x = LADO - 1
+    }
+    
+    lab[x][y] = PUERTA
+}
+
 function crea_cruz(lab: number[][], visitado: boolean[][]) {
     let muro: number[];
     let xmuro: number;
@@ -152,10 +180,12 @@ namespace SpriteKind {
 }
 
 //  LADO impar máximo de 255
-let LADO = 255
+let LADO = 11
 let MURO = 0
 let PASILLO = 1
-let NUM_FANTASMAS = 100
+let PUERTA = 2
+let NUM_FANTASMAS = 2
+let borde = randint(0, 3)
 let lab : number[][] = []
 let visitado : boolean[][] = []
 sprites.onOverlap(SpriteKind.Player, SpriteKind.fantasma, function choca_chup(s1: Sprite, s2: Sprite) {
@@ -218,4 +248,5 @@ tiles.setTilemap(tilemap`level2`)
 scene.cameraFollowSprite(teseo)
 init_lab(lab, visitado)
 crea_laberinto(lab, visitado)
+crea_puerta(lab)
 pinta_mosaicos(lab)
