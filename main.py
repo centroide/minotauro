@@ -120,22 +120,35 @@ def crea_cruz(lab:List[List[number]], visitado:List[List[bool]]):
         ymuro= muro[1]
         lab[xmuro][ymuro]=PASILLO
 
-def choca_chup(s1,s2):
-    game.over()
+def choca_chup(p,f):
+    if armadillo:
+        f.destroy(effects.fire, 500)
+    else:
+        game.over()
+
+def coge_arma(p,a):
+    global armadillo
+    armadillo=True
+    a.destroy(effects.star_field,500)
+
 
 @namespace
 class SpriteKind:
     fantasma=SpriteKind.create()
+    arma=SpriteKind.create()
 
 # LADO impar máximo de 255
-LADO=11
+LADO=101
 MURO=0
 PASILLO=1
 PUERTA=2
-NUM_FANTASMAS=2
+NUM_FANTASMAS=50
+NUM_ARMAS=NUM_FANTASMAS//2
 borde=randint(0,3)
+armadillo=False
 
-
+#if teseo.overlaps_with():
+#    game.over(True)
 
 
 
@@ -144,6 +157,7 @@ visitado: List[List[bool]] = []
 
     
 sprites.on_overlap(SpriteKind.player, SpriteKind.fantasma, choca_chup)
+sprites.on_overlap(SpriteKind.player, SpriteKind.arma, coge_arma)
 
 scene.set_background_color(3)
 teseo = sprites.create(img("""
@@ -151,17 +165,17 @@ teseo = sprites.create(img("""
     . . . . . f f f f f f . . . . .
     . . . f f e e e e f 2 f . . . .
     . . f f e e e e f 2 2 2 f . . .
-    . . f e e e f f e e e e f . . .
-    . . f f f f e e 2 2 2 2 e f . .
-    . . f e 2 2 2 f f f f e 2 f . .
+    . . f e e e f f 2 2 2 2 f . . .
+    . . f f f f 2 2 2 2 2 2 2 f . .
+    . . f 2 2 2 2 f f f f 2 2 f . .
     . f f f f f f f e e e f f f . .
-    . f f e 4 4 e b f 4 4 e e f . .
-    . f e e 4 d 4 1 f d d e f f . .
-    . . f e e e 4 d d d d f d d f .
-    . . . . f e e 4 e e e f b b f .
-    . . . . f 2 2 2 4 d d e b b f .
-    . . . f f 4 4 4 e d d e b f . .
-    . . . f f f f f f e e f f . . .
+    . f f e 4 4 4 b f 4 4 e e f . .
+    . f e e 4 d 4 1 f d d e f . . .
+    . . f e e e e e d d d f . . . .
+    . . . f f 4 d d e 4 5 f . . . .
+    . . . . f e d d e 2 2 f f . . .
+    . . . . f f e e f 5 4 f f . . .
+    . . . . f f f f f f f f . . . .
     . . . . f f . . . f f f . . . .
 """), SpriteKind.player)
 for i in range (NUM_FANTASMAS):
@@ -180,19 +194,40 @@ for i in range (NUM_FANTASMAS):
         ......fbdbfddfbdbf......
         ......fcdcf11fcdcf......
         .......fb111111bf.......
-        ......fffcdb1bdffff.....
-        ....fc111cbfbfc111cf....
+        .....ffffdb11bdffff.....
+        ....fc111cfbbfc111cf....
         ....f1b1b1ffff1b1b1f....
-        ....fbfbffffffbfbfbf....
+        ....fbfbfbffffbfbfbf....
         .........ffffff.........
-        ...........fff..........
-        ........................
+        ..........fff...........
+        ...........f............
         ........................
         ........................
         ........................
     """), SpriteKind.fantasma)
     fantasma.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8 )    
     fantasma.follow(teseo,40)
+for i in range (NUM_ARMAS):
+    fantasma = sprites.create(img("""
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . c c . . . . . . . .
+        . . . . c a f b c . . . . . . .
+        . . . . b f f b c c . . . . . .
+        . . . a a f b a b a c . . . . .
+        . . . c a c b b f f b . . . . .
+        . . . . b f f b f a b . . . . .
+        . . . . a f f b b b a . . . . .
+        . . . . . a b b c c . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+    """), SpriteKind.arma)
+    fantasma.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8 )    
+
 teseo.set_position(aleatorio_impar(0, LADO-1)*16+8,aleatorio_impar(0, LADO-1)*16+8)
 controller.move_sprite(teseo)
 teseo.set_bounce_on_wall(True)

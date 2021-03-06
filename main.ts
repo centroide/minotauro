@@ -1,3 +1,4 @@
+let i: number;
 let fantasma: Sprite;
 function init_lab(lab: number[][], visitado: boolean[][]) {
     for (let i = 0; i < LADO; i++) {
@@ -177,19 +178,34 @@ function crea_cruz(lab: number[][], visitado: boolean[][]) {
 
 namespace SpriteKind {
     export const fantasma = SpriteKind.create()
+    export const arma = SpriteKind.create()
 }
 
 //  LADO impar máximo de 255
-let LADO = 11
+let LADO = 101
 let MURO = 0
 let PASILLO = 1
 let PUERTA = 2
-let NUM_FANTASMAS = 2
+let NUM_FANTASMAS = 50
+let NUM_ARMAS = Math.idiv(NUM_FANTASMAS, 2)
 let borde = randint(0, 3)
+let armadillo = false
+// if teseo.overlaps_with():
+//     game.over(True)
 let lab : number[][] = []
 let visitado : boolean[][] = []
-sprites.onOverlap(SpriteKind.Player, SpriteKind.fantasma, function choca_chup(s1: Sprite, s2: Sprite) {
-    game.over()
+sprites.onOverlap(SpriteKind.Player, SpriteKind.fantasma, function choca_chup(p: Sprite, f: Sprite) {
+    if (armadillo) {
+        f.destroy(effects.fire, 500)
+    } else {
+        game.over()
+    }
+    
+})
+sprites.onOverlap(SpriteKind.Player, SpriteKind.arma, function coge_arma(p: Sprite, a: Sprite) {
+    
+    armadillo = true
+    a.destroy(effects.starField, 500)
 })
 scene.setBackgroundColor(3)
 let teseo = sprites.create(img`
@@ -197,20 +213,20 @@ let teseo = sprites.create(img`
     . . . . . f f f f f f . . . . .
     . . . f f e e e e f 2 f . . . .
     . . f f e e e e f 2 2 2 f . . .
-    . . f e e e f f e e e e f . . .
-    . . f f f f e e 2 2 2 2 e f . .
-    . . f e 2 2 2 f f f f e 2 f . .
+    . . f e e e f f 2 2 2 2 f . . .
+    . . f f f f 2 2 2 2 2 2 2 f . .
+    . . f 2 2 2 2 f f f f 2 2 f . .
     . f f f f f f f e e e f f f . .
-    . f f e 4 4 e b f 4 4 e e f . .
-    . f e e 4 d 4 1 f d d e f f . .
-    . . f e e e 4 d d d d f d d f .
-    . . . . f e e 4 e e e f b b f .
-    . . . . f 2 2 2 4 d d e b b f .
-    . . . f f 4 4 4 e d d e b f . .
-    . . . f f f f f f e e f f . . .
+    . f f e 4 4 4 b f 4 4 e e f . .
+    . f e e 4 d 4 1 f d d e f . . .
+    . . f e e e e e d d d f . . . .
+    . . . f f 4 d d e 4 5 f . . . .
+    . . . . f e d d e 2 2 f f . . .
+    . . . . f f e e f 5 4 f f . . .
+    . . . . f f f f f f f f . . . .
     . . . . f f . . . f f f . . . .
 `, SpriteKind.Player)
-for (let i = 0; i < NUM_FANTASMAS; i++) {
+for (i = 0; i < NUM_FANTASMAS; i++) {
     fantasma = sprites.create(img`
         ........................
         ........................
@@ -226,19 +242,40 @@ for (let i = 0; i < NUM_FANTASMAS; i++) {
         ......fbdbfddfbdbf......
         ......fcdcf11fcdcf......
         .......fb111111bf.......
-        ......fffcdb1bdffff.....
-        ....fc111cbfbfc111cf....
+        .....ffffdb11bdffff.....
+        ....fc111cfbbfc111cf....
         ....f1b1b1ffff1b1b1f....
-        ....fbfbffffffbfbfbf....
+        ....fbfbfbffffbfbfbf....
         .........ffffff.........
-        ...........fff..........
-        ........................
+        ..........fff...........
+        ...........f............
         ........................
         ........................
         ........................
     `, SpriteKind.fantasma)
     fantasma.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
     fantasma.follow(teseo, 40)
+}
+for (i = 0; i < NUM_ARMAS; i++) {
+    fantasma = sprites.create(img`
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . c c . . . . . . . .
+        . . . . c a f b c . . . . . . .
+        . . . . b f f b c c . . . . . .
+        . . . a a f b a b a c . . . . .
+        . . . c a c b b f f b . . . . .
+        . . . . b f f b f a b . . . . .
+        . . . . a f f b b b a . . . . .
+        . . . . . a b b c c . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+        . . . . . . . . . . . . . . . .
+    `, SpriteKind.arma)
+    fantasma.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
 }
 teseo.setPosition(aleatorio_impar(0, LADO - 1) * 16 + 8, aleatorio_impar(0, LADO - 1) * 16 + 8)
 controller.moveSprite(teseo)
